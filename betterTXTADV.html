@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+    <!-- To create a new room, you must enter it into the world object, and proceed to add it to x, y, switch -->
+    <head>
+        <title>
+            Text Adventure
+        </title>
+        <style>
+            .body{
+                text-align: center;
+                border: 10px solid blue;
+            }
+            .div{
+                display:inline;
+            }
+        </style>
+    </head>
+    <body class = "body">
+        <h2>
+            Game Log
+        </h2>
+        <h4>
+            <div id = "gamelog">
+            
+            </div>
+            <div class = "div">
+                <input id = "input" onkeydown = "keydon(event);">
+                <button id = "button">
+                    Enter
+                </button>
+            </div>
+        </h4>
+        <script>
+            var player = {
+              x : 0,
+              y: 0,
+              place : "spawn",
+              inventory : [],
+            };
+            var world = {
+              spawn : {
+                desc : "this is the room you spawn in.",
+                x : 0,
+                y : 0,
+                exit : ["n"],
+                posses : [],
+              },
+              other : {
+                desc : "this is the other room",
+                x : 0,
+                y : 1,
+                exit : ["s"],
+                posses : [],
+              }
+            };
+            log("< " + world[player.place].desc);
+            log("< Available exits are:  " + world[player.place].exit);
+            function log(input){
+                var p = document.createElement(p);
+                p.innerHTML = input + "<br>";
+                document.getElementById("gamelog").appendChild(p);
+                window.scrollTo(0,screen.height);
+            }
+            var input = document.getElementById("input");
+            var button = document.getElementById("button");
+            var ans = "";
+            var check = "";
+            function keydon(event){
+              if(event.keyCode == 13){
+                button.click();
+              }
+            }
+            button.addEventListener("click", function(){
+              log(">" + input.value);
+              ans = input.value
+              input.value = "";
+              if(ans == "clear"){
+                  document.getElementById("gamelog").innerHTML = "";
+              }else{
+                for(i = world[player.place].exit.length; i>=0; i--){
+                  if(ans == world[player.place].exit[i]){
+                    check = i;
+                    break;
+                  }
+                }
+                if(ans !== world[player.place].exit[check]){
+                  log("< There is a wall there!");
+                }else{
+                    switch(world[player.place].exit[check]){
+                        case "n" :
+                            player.y ++;
+                        break;
+                        case "s" :
+                            player.y --;
+                        break;
+                        case "e" :
+                            player.x ++;
+                        break;
+                        case "w" :
+                            player.x --;
+                        break;
+                        default :
+                            log("error!!!");
+                    }
+                }
+                //now switch to lable player.place to appropriate x y coordanant rooms.
+                switch(player.y){
+                    case 0 :
+                        switch(player.x){
+                            case 0 :
+                                player.place = "spawn";
+                            break;
+                        }
+                    break;
+                    case 1 :
+                        switch(player.x){
+                            case 0 :
+                                player.place = "other";
+                            break;
+                        }
+                    break;
+                }
+                log("< " + world[player.place].desc);
+                log("< Available exits are:  " + world[player.place].exit);
+                if(world[player.place].posses.length == 0){
+                  log("<there are no useful objects in this room.");
+                }else{
+                  log("<this room contains " + world[player.place].posses);
+                }
+              }
+            });
+        </script>
+    </body>
+</html>
